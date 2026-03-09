@@ -1,0 +1,33 @@
+query readPost($username: String!, $url_slug: String) {
+    post(username: $username, url_slug: $url_slug) {
+        id
+        title
+        released_at
+        updated_at
+        tags
+        body
+        short_description
+        is_private
+        thumbnail
+        url_slug
+        user {
+            username
+        }
+        series {
+            name
+            url_slug
+        }
+        linked_posts {
+            previous {
+                id
+                title
+                url_slug
+            }
+            next {
+                id
+                title
+                url_slug
+            }
+        }
+    }
+}

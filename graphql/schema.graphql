@@ -1,0 +1,109 @@
+scalar JSON
+scalar Date
+
+type Post {
+    id: ID!
+    title: String
+    body: String
+    thumbnail: String
+    is_markdown: Boolean
+    is_temp: Boolean
+    user: User
+    url_slug: String
+    likes: Int
+    meta: JSON
+    views: Int
+    is_private: Boolean
+    released_at: Date
+    created_at: Date
+    updated_at: Date
+    short_description: String
+    comments: [Comment]
+    tags: [String]
+    comments_count: Int
+    series: Series
+    liked: Boolean
+    linked_posts: LinkedPosts
+    last_read_at: Date
+    recommended_posts: [Post]
+}
+
+type LinkedPosts {
+    previous: Post
+    next: Post
+}
+
+type Series {
+    id: ID!
+    user: User
+    name: String
+    description: String
+    url_slug: String
+    created_at: Date
+    updated_at: Date
+    series_posts: [SeriesPost]
+    thumbnail: String
+    posts_count: Int
+}
+
+type SeriesPost {
+    id: ID!
+    index: Int
+    post: Post
+}
+
+type User {
+    id: ID!
+    username: String
+    email: String
+    created_at: Date
+    updated_at: Date
+    is_certified: Boolean
+    profile: UserProfile
+    velog_config: VelogConfig
+    series_list: [Series]
+    user_meta: UserMeta
+    is_followed: Boolean
+    is_trusted: Boolean
+}
+
+type UserProfile {
+    id: ID!
+    display_name: String
+    short_bio: String
+    thumbnail: String
+    created_at: Date
+    updated_at: Date
+    about: String
+    profile_links: JSON
+}
+
+type VelogConfig {
+    id: ID!
+    title: String
+    logo_image: String
+}
+
+type UserMeta {
+    id: ID!
+    email_notification: Boolean
+    email_promotion: Boolean
+}
+
+type Comment {
+    id: ID!
+    text: String
+    likes: Int
+    level: Int
+    has_replies: Boolean
+    deleted: Boolean
+    user: User
+    replies: [Comment]
+    created_at: Date
+    replies_count: Int
+}
+
+type Query {
+    post(id: ID, username: String!, url_slug: String): Post
+    posts(cursor: ID, limit: Int, username: String!, temp_only: Boolean, tag: String): [Post]
+}

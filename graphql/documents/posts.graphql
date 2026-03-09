@@ -1,0 +1,7 @@
+query velogPosts($cursor: ID, $limit: Int = 20, $username: String!, $temp_only: Boolean, $tag: String) {
+    posts(cursor: $cursor, limit: $limit, username: $username, temp_only: $temp_only, tag: $tag) {
+        id
+        title
+        url_slug
+    }
+}
