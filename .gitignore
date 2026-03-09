@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+
+# backup outputs
+backup/
+backup5/
+OLD/
+/tmp/velog-backup/
+
+# env
+.env
+
+# logs
+*.log
+
+# OS
+.DS_Store
+
+# zip artifacts
+*.zip
+
+**/*.local.*
