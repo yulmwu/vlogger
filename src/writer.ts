@@ -52,11 +52,17 @@ const findCachedImage = (cacheDir: string, imageUuid: string, imageExt: string):
     return null
 }
 
-const imageToCdn = (post: Post, cdnBaseUrl?: string | null): Post => {
+const imageToCdn = (post: Post, cdnBaseUrl?: string | null, includeDatePrefix: boolean = true): Post => {
     if (!post.body) return post
     if (!cdnBaseUrl) return post
+    if (!post.released_at || !post.url_slug) return post
 
     const matches = [...post.body.matchAll(REGEX_IMAGE_URL)]
+    const formattedDate = dateFormat(post.released_at)
+    const postSlug = whiteSpaceReplace(post.url_slug)
+    const postFileSlug = formatPostSlug(formattedDate, postSlug, includeDatePrefix)
+    const seriesName = post.series ? whiteSpaceReplace(post.series.name!) : null
+    const cdnBase = cdnBaseUrl.replace(/\/+$/, '')
 
     for (const match of matches) {
         const altText = match[1]
@@ -67,7 +73,10 @@ const imageToCdn = (post: Post, cdnBaseUrl?: string | null): Post => {
 
         const imageUuid = imageUuidMatch[0]
         const imageExt = path.extname(imageUrl)
-        const cdnUrl = `${cdnBaseUrl}/${imageUuid}${imageExt}`
+        const cdnPath = seriesName
+            ? `${IMAGE_DIR_NAME}/${seriesName}/${postFileSlug}/${imageUuid}${imageExt}`
+            : `${IMAGE_DIR_NAME}/${postFileSlug}/${imageUuid}${imageExt}`
+        const cdnUrl = `${cdnBase}/${cdnPath}`
 
         post.body = post.body.replace(match[0], `![${altText}](${cdnUrl})`)
     }
@@ -246,7 +255,7 @@ export const fileWrite = async (posts: PostsWithData, options: FileWriterOptions
         if (options.includeImages) {
             post.data = await imageExtract(post.data, options)
         } else {
-            post.data = imageToCdn(post.data, options.cdnBaseUrl)
+            post.data = imageToCdn(post.data, options.cdnBaseUrl, options.includeDatePrefix)
         }
 
         const formattedDate = dateFormat(post.data.released_at)
