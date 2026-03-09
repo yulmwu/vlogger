@@ -5,7 +5,7 @@ import { BackupConfig, PostsWithData } from './types'
 import { purgeS3Bucket, uploadS3 } from './aws'
 
 export const runBackup = async (config: BackupConfig) => {
-    if (config.cleanOutput && fs.existsSync(config.paths.base)) {
+    if (config.cleanOutput && !config.slug && fs.existsSync(config.paths.base)) {
         fs.rmSync(config.paths.base, { recursive: true, force: true })
     }
 
@@ -58,6 +58,7 @@ export const runBackup = async (config: BackupConfig) => {
         includeImages: config.includeImages,
         includeMetadata: config.includeMetadata,
         includeJson: config.includeJson,
+        appendJson: !!config.slug,
         includeDatePrefix: config.includeDatePrefix,
         cdnBaseUrl: config.cdnBaseUrl,
         cacheDir: config.cacheDir,

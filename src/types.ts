@@ -37,6 +37,7 @@ export interface FileWriterOptions {
     includeImages: boolean
     includeMetadata: boolean
     includeJson: boolean
+    appendJson?: boolean
     includeDatePrefix: boolean
     cdnBaseUrl?: string | null
     cacheDir: string

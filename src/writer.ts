@@ -189,7 +189,52 @@ export const fileWrite = async (posts: PostsWithData, options: FileWriterOptions
         }
 
         const jsonPath = path.join(options.paths.base, '_output.json')
-        fs.writeFileSync(jsonPath, JSON.stringify(posts, null, 4), 'utf-8')
+        if (options.appendJson && fs.existsSync(jsonPath)) {
+            let existing: PostsWithData = []
+            try {
+                const raw = fs.readFileSync(jsonPath, 'utf-8')
+                const parsed = JSON.parse(raw)
+                if (Array.isArray(parsed)) existing = parsed
+            } catch {
+                existing = []
+            }
+
+            const keyOf = (p: any): string | null => {
+                if (p && typeof p === 'object') {
+                    if (typeof p.id === 'string' && p.id.length > 0) return `id:${p.id}`
+                    if (typeof p.url_slug === 'string' && p.url_slug.length > 0) return `slug:${p.url_slug}`
+                }
+
+                return null
+            }
+
+            const incomingByKey = new Map<string, PostsWithData[number]>()
+            for (const post of posts) {
+                const key = keyOf(post)
+                if (key) incomingByKey.set(key, post)
+            }
+
+            const merged: PostsWithData = []
+            const used = new Set<string>()
+
+            for (const post of existing) {
+                const key = keyOf(post)
+                if (key && incomingByKey.has(key)) {
+                    merged.push(incomingByKey.get(key)!)
+                    used.add(key)
+                } else {
+                    merged.push(post)
+                }
+            }
+
+            for (const [key, post] of incomingByKey.entries()) {
+                if (!used.has(key)) merged.push(post)
+            }
+
+            fs.writeFileSync(jsonPath, JSON.stringify(merged, null, 4), 'utf-8')
+        } else {
+            fs.writeFileSync(jsonPath, JSON.stringify(posts, null, 4), 'utf-8')
+        }
     }
 
     for (const post of posts) {
