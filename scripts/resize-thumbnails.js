@@ -45,6 +45,9 @@ function buildOutputPath(filePath, sizeLabel) {
     const dir = path.dirname(filePath)
     const ext = path.extname(filePath)
     const base = path.basename(filePath, ext)
+    if (base.endsWith(`_${sizeLabel}`)) {
+        return path.join(dir, `${base}${ext}`)
+    }
     return path.join(dir, `${base}_${sizeLabel}${ext}`)
 }
 
@@ -56,20 +59,44 @@ async function resizeImage(inputPath, outputPath, width, height) {
     })
 
     if (ext === '.png') {
+        if (inputPath === outputPath) {
+            const tempPath = `${outputPath}.tmp_${process.pid}`
+            await image.png().toFile(tempPath)
+            fs.renameSync(tempPath, outputPath)
+            return
+        }
         await image.png().toFile(outputPath)
         return
     }
 
     if (ext === '.jpg' || ext === '.jpeg') {
+        if (inputPath === outputPath) {
+            const tempPath = `${outputPath}.tmp_${process.pid}`
+            await image.jpeg({ quality: 90 }).toFile(tempPath)
+            fs.renameSync(tempPath, outputPath)
+            return
+        }
         await image.jpeg({ quality: 90 }).toFile(outputPath)
         return
     }
 
     if (ext === '.webp') {
+        if (inputPath === outputPath) {
+            const tempPath = `${outputPath}.tmp_${process.pid}`
+            await image.webp({ quality: 90 }).toFile(tempPath)
+            fs.renameSync(tempPath, outputPath)
+            return
+        }
         await image.webp({ quality: 90 }).toFile(outputPath)
         return
     }
 
+    if (inputPath === outputPath) {
+        const tempPath = `${outputPath}.tmp_${process.pid}`
+        await image.toFile(tempPath)
+        fs.renameSync(tempPath, outputPath)
+        return
+    }
     await image.toFile(outputPath)
 }
 
