@@ -61,6 +61,7 @@ export const runBackup = async (config: BackupConfig) => {
         appendJson: !!config.slug,
         includeDatePrefix: config.includeDatePrefix,
         cdnBaseUrl: config.cdnBaseUrl,
+        cdnThumbnailSuffix: config.cdnThumbnailSuffix,
         cacheDir: config.cacheDir,
     })
 

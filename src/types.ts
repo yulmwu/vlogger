@@ -23,6 +23,7 @@ export interface BackupConfig {
     includeJson: boolean
     includeDatePrefix: boolean
     cdnBaseUrl?: string | null
+    cdnThumbnailSuffix: string
     cleanOutput: boolean
     cacheDir: string
     s3: {
@@ -40,5 +41,6 @@ export interface FileWriterOptions {
     appendJson?: boolean
     includeDatePrefix: boolean
     cdnBaseUrl?: string | null
+    cdnThumbnailSuffix: string
     cacheDir: string
 }

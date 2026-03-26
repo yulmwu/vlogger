@@ -8,6 +8,7 @@ export interface CliOptions {
     slug?: string
     output?: string
     cdnBaseUrl?: string
+    cdnThumbnailSuffix?: string
     images?: boolean
     metadata?: boolean
     json?: boolean
@@ -64,6 +65,11 @@ export const parseCli = (argv: string[]): { options: CliOptions; errors: string[
             type: 'string',
             describe: 'Replace image URLs with CDN base when images are off',
         })
+        .option('cdn-thumbnail-suffix', {
+            type: 'string',
+            default: '_960x540',
+            describe: 'Thumbnail filename suffix for CDN (default: _960x540)',
+        })
         .option('clean', {
             type: 'boolean',
             default: true,
@@ -98,6 +104,7 @@ export const parseCli = (argv: string[]): { options: CliOptions; errors: string[
             slug: parsed.slug as string | undefined,
             output: parsed.output as string | undefined,
             cdnBaseUrl: parsed.cdnBaseUrl as string | undefined,
+            cdnThumbnailSuffix: parsed.cdnThumbnailSuffix as string | undefined,
             images: parsed.images as boolean | undefined,
             metadata: parsed.metadata as boolean | undefined,
             json: parsed.json as boolean | undefined,

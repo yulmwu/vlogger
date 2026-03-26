@@ -157,15 +157,26 @@ export const imageExtract = async (post: Post, options: FileWriterOptions): Prom
 const thumbnailExtract = async (post: Post, options: FileWriterOptions): Promise<string | null> => {
     if (!post.thumbnail) return null
     const thumbnailExt = path.extname(post.thumbnail)
+    const seriesName = post.series ? whiteSpaceReplace(post.series.name!) : null
 
-    const thumbnailPath = post.series
-        ? path.join(options.paths.thumbnails, whiteSpaceReplace(post.series.name!), `${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}`)
+    const thumbnailPath = seriesName
+        ? path.join(options.paths.thumbnails, seriesName, `${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}`)
         : path.join(options.paths.thumbnails, `${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}`)
 
     fs.mkdirSync(path.dirname(thumbnailPath), { recursive: true })
     await imageDownload(post.thumbnail, thumbnailPath, options.cacheDir, undefined, true)
 
-    return post.series ? `../../${THUMBNAIL_DIR_NAME}/${whiteSpaceReplace(post.series.name!)}/${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}` : `../${THUMBNAIL_DIR_NAME}/${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}`
+    if (options.cdnBaseUrl) {
+        const cdnBase = options.cdnBaseUrl.replace(/\/+$/, '')
+        const suffix = options.cdnThumbnailSuffix || ''
+        const filename = `${whiteSpaceReplace(post.url_slug!)}${suffix}${thumbnailExt}`
+        const cdnPath = seriesName ? `${THUMBNAIL_DIR_NAME}/${seriesName}/${filename}` : `${THUMBNAIL_DIR_NAME}/${filename}`
+        return `${cdnBase}/${cdnPath}`
+    }
+
+    return seriesName
+        ? `../../${THUMBNAIL_DIR_NAME}/${seriesName}/${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}`
+        : `../${THUMBNAIL_DIR_NAME}/${whiteSpaceReplace(post.url_slug!)}${thumbnailExt}`
 }
 
 /*

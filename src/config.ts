@@ -7,6 +7,7 @@ const DEFAULT_USERNAME = 'yulmwu'
 const DEFAULT_OUTPUT_DIR = path.join(process.cwd(), 'backup')
 const DEFAULT_CACHE_DIR = path.join(process.cwd(), 'OLD')
 const DEFAULT_S3_RETAIN = 5
+const DEFAULT_CDN_THUMBNAIL_SUFFIX = '_960x540'
 
 export const resolveConfig = (cli: CliOptions): BackupConfig => {
     const username = cli.username ?? process.env.VELOG_USERNAME ?? DEFAULT_USERNAME
@@ -16,6 +17,7 @@ export const resolveConfig = (cli: CliOptions): BackupConfig => {
     const includeJson = cli.json ?? true
     const includeDatePrefix = cli.datePrefix ?? true
     const cdnBaseUrl = cli.cdnBaseUrl ?? process.env.CDN_BASE_URL ?? null
+    const cdnThumbnailSuffix = cli.cdnThumbnailSuffix ?? process.env.CDN_THUMBNAIL_SUFFIX ?? DEFAULT_CDN_THUMBNAIL_SUFFIX
     const cleanOutput = cli.clean ?? true
     const cacheDir = process.env.VELOG_CACHE_DIR ?? DEFAULT_CACHE_DIR
 
@@ -38,6 +40,7 @@ export const resolveConfig = (cli: CliOptions): BackupConfig => {
         includeJson,
         includeDatePrefix,
         cdnBaseUrl,
+        cdnThumbnailSuffix,
         cleanOutput,
         cacheDir,
         s3: {
